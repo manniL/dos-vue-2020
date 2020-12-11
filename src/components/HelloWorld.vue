@@ -41,6 +41,13 @@
     <br>
     <br>
     Interval: {{ intervalText }}
+    <br>
+    <br>
+    {{ mountains }}
+    <br><br>
+    <br>
+    <h1>Mountain</h1>
+    {{ mountain }}
   </div>
 </template>
 
@@ -50,6 +57,7 @@ import SlotParagraph from '@/components/SlotParagraph'
 import { ref, computed, watch, onMounted } from 'vue'
 import { useTodos } from '@/composables/useTodos'
 import { useInterval } from '@/composables/useInterval'
+import useRepository from '@/composables/useRepository'
 
 export default {
   name: 'HelloWorld',
@@ -89,11 +97,14 @@ export default {
       ctx.emit('change')
     }
 
-    onMounted(() => {
+    const repository = useRepository('https://api.nuxtjs.dev/mountains')
+    const mountains = repository.index()
+    const mountain = repository.show('aconcagua')
+    onMounted(async () => {
       console.log('I am there')
     })
 
-    return { text, todoText, todos, textLength, finishedTodos, finishTodo, addTodo, sendChangeEvent, intervalText }
+    return { text, todoText, todos, textLength, finishedTodos, finishTodo, addTodo, sendChangeEvent, intervalText, mountains, mountain }
   },
 }
 </script>
