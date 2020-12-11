@@ -8,7 +8,7 @@
     <button @click="text = ''"> Reset Text</button>
     <br>
     <br>
-    Length: {{ textLength }} {{ watchedTextLength }}
+    Length: {{ textLength }}
     <br>
     <br>
     <br>
@@ -38,12 +38,18 @@
         </template>
       </SlotParagraph>
     </div>
+    <br>
+    <br>
+    Interval: {{ intervalText }}
   </div>
 </template>
 
 <script>
 import TodoListItem from '@/components/TodoListItem'
 import SlotParagraph from '@/components/SlotParagraph'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useTodos } from '@/composables/useTodos'
+import { useInterval } from '@/composables/useInterval'
 
 export default {
   name: 'HelloWorld',
@@ -51,49 +57,43 @@ export default {
   props: {
     msg: String
   },
-  data () {
-    return {
+  setup (props, ctx) {
+    /* const data = reactive({
       text: '',
-      watchedTextLength: 0,
       todoText: '',
       todos: []
-    }
-  },
-  watch: {
-    textLength(newVal) {
-      if(newVal > 15) {
-        this.text = `${this.text.slice(0, 15)}...`
+    }) */
+
+    const text = ref('aajdsiasdioasjdioasjdoaisjoiaoi')
+    const textLength = computed(() => text.value.length)
+    watch(textLength, (newVal) => {
+      if (newVal > 15) {
+        text.value = `${text.value.slice(0, 15)}...`
       }
-    }
-  },
-  computed: {
-    textLength () {
-      console.log('calculate length')
-      return this.text.length
-    },
-    finishedTodos () {
-      return this.todos
-          .filter(todo => todo.isFinished)
-    }
-  },
-  methods: {
-    sendChangeEvent () {
+    }, { immediate: true })
+    /*watchEffect(() => {
+      if(textLength.value > 15) {
+        text.value = `${text.value.slice(0, 15)}...`
+      }
+    })*/
+
+    const { todoText, todos, finishedTodos, finishTodo, addTodo } = useTodos()
+
+    const intervalText = ref(10)
+    useInterval(5, () => {
+      intervalText.value += 5
+    })
+
+    const sendChangeEvent = () => {
       console.log('nichts')
-      this.$emit('change')
-    },
-    addTodo () {
-      this.todos.push({
-        text: this.todoText,
-        isFinished: false
-      })
-      this.todoText = ''
-    },
-    finishTodo (i) {
-      this.todos[i].isFinished = true
+      ctx.emit('change')
     }
+
+    onMounted(() => {
+      console.log('I am there')
+    })
+
+    return { text, todoText, todos, textLength, finishedTodos, finishTodo, addTodo, sendChangeEvent, intervalText }
   },
-  mounted () {
-    console.log('I am there')
-  }
 }
 </script>

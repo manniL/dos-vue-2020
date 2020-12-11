@@ -22,6 +22,7 @@ export default {
     log () {
       console.log('log')
     }
-  }
+  },
+  emits: ['finish']
 }
 </script>
